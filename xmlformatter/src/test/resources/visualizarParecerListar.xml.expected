@@ -1,0 +1,231 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich" xmlns:s="http://jboss.com/products/seam/taglib"
+    xmlns:t="http://myfaces.apache.org/tomahawk" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:sgc="http://www.esaf.gov.br/sgc" template="/templates/padraoComMenu.jspx">
+  <br />
+
+  <ui:define name="title">#{msgs['page.visualizarParecer.title']}</ui:define>
+  <ui:define name="conteudo">
+    <h:form id="filtroForm">
+      <s:validateAll>
+        <fieldset>
+          <fieldset>
+            <h:outputLabel for="statusConcurso" value="#{msgs['commons.statusConcurso']}:" />
+            <h:selectManyCheckbox id="statusConcurso"
+                value="#{visualizarParecerListarBean.statusSelecionados}" required="true"
+                styleClass="painelOpcoes">
+              <f:selectItem itemValue="ANDAMENTO"
+                  itemLabel="#{msgs['page.visualizarParecer.label.emAndamento']}" />
+              <f:selectItem itemValue="ENCERRADO"
+                  itemLabel="#{msgs['page.visualizarParecer.label.encerrado']}" />
+              <a4j:support action="#{visualizarParecerListarBean.consultarConcursos}"
+                  event="onchange" reRender="filtroForm,resultadosForm" ajaxSingle="true">
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.concursoSelecionado}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.etapas}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.etapaSelecionada}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.provas}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.provaSelecionada}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.disciplinaSelecionada}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.pareceres}" />
+              </a4j:support>
+            </h:selectManyCheckbox>
+            <sgc:message for="statusConcurso" />
+          </fieldset>
+          <fieldset>
+            <h:outputLabel for="concurso" value="#{msgs['commons.concurso']}:" />
+            <h:selectOneMenu id="concurso"
+                value="#{visualizarParecerListarBean.concursoSelecionado}" required="true">
+              <s:selectItems var="concurso" value="#{visualizarParecerListarBean.concursos}"
+                  label="#{concurso.nomeConcurso}" noSelectionLabel="#{msgs['commons.selecione']}" />
+              <a4j:support event="onchange" ajaxSingle="true"
+                  action="#{visualizarParecerListarBean.consultarEtapas}"
+                  reRender="filtroForm,resultadosForm">
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.provas}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.provaSelecionada}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.disciplinaSelecionada}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.pareceres}" />
+              </a4j:support>
+              <s:convertEntity />
+            </h:selectOneMenu>
+            <sgc:message for="concurso" />
+            <br />
+
+            <h:outputLabel for="etapa" value="#{msgs['commons.etapa']}:" />
+            <h:selectOneMenu id="etapa" value="#{visualizarParecerListarBean.etapaSelecionada}"
+                required="true">
+              <s:selectItems var="etapa" value="#{visualizarParecerListarBean.etapas}"
+                  label="#{etapa.nome}" noSelectionLabel="#{msgs['commons.selecione']}" />
+              <a4j:support event="onchange" ajaxSingle="true"
+                  action="#{visualizarParecerListarBean.consultarProvas}"
+                  reRender="filtroForm,resultadosForm">
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.disciplinaSelecionada}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.pareceres}" />
+              </a4j:support>
+              <s:convertEntity />
+            </h:selectOneMenu>
+            <sgc:message for="etapa" />
+            <br />
+
+            <h:outputLabel for="prova" value="#{msgs['commons.prova']}:" />
+            <h:selectOneMenu id="prova" value="#{visualizarParecerListarBean.provaSelecionada}"
+                required="true">
+              <s:selectItems var="prova" value="#{visualizarParecerListarBean.provas}"
+                  label="#{prova.nome}" noSelectionLabel="#{msgs['commons.selecione']}" />
+              <a4j:support event="onchange" ajaxSingle="true"
+                  reRender="disciplina,idioma,resultadosForm">
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.pareceres}" />
+              </a4j:support>
+              <s:convertEntity />
+            </h:selectOneMenu>
+            <sgc:message for="prova" />
+            <br />
+
+            <h:outputLabel for="disciplina" value="#{msgs['commons.disciplina']}:" />
+            <h:selectOneMenu id="disciplina"
+                value="#{visualizarParecerListarBean.disciplinaSelecionada}">
+              <s:selectItems var="disciplina"
+                  value="#{visualizarParecerListarBean.provaSelecionada.todasDisciplinas}"
+                  label="#{disciplina.nome}" noSelectionLabel="#{msgs['commons.selecione']}" />
+              <a4j:support event="onchange" ajaxSingle="true"
+                  reRender="idiomaPanel,resultadosForm">
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.idiomaSelecionado}" />
+                <f:setPropertyActionListener value="#{null}"
+                    target="#{visualizarParecerListarBean.pareceres}" />
+              </a4j:support>
+              <s:convertEntity />
+            </h:selectOneMenu>
+            <sgc:message for="disciplina" />
+            <br />
+
+            <h:panelGroup id="idiomaPanel">
+              <h:panelGroup
+                  rendered="#{visualizarParecerListarBean.disciplinaSelecionada.deIdioma}">
+                <h:outputLabel for="idioma" value="#{msgs['commons.idioma']}:" />
+                <h:selectOneMenu id="idioma"
+                    value="#{visualizarParecerListarBean.idiomaSelecionado}">
+                  <s:selectItems var="idioma"
+                      value="#{sgc:dataModel(visualizarParecerListarBean.concursoSelecionado.idiomas)}"
+                      label="#{idioma.nome}" noSelectionLabel="#{msgs['commons.selecione']}" />
+                  <a4j:support event="onchange" ajaxSingle="true" reRender="resultadosForm">
+                    <f:setPropertyActionListener value="#{null}"
+                        target="#{visualizarParecerListarBean.pareceres}" />
+                  </a4j:support>
+                  <s:convertEntity />
+                </h:selectOneMenu>
+                <sgc:message for="idioma" />
+              </h:panelGroup>
+            </h:panelGroup>
+
+          </fieldset>
+
+          <fieldset class="botoes">
+            <h:panelGroup id="panelBotoes">
+              <h:commandButton id="pesquisar" value="#{msgs['commons.pesquisar']}"
+                  action="#{visualizarParecerListarBean.pesquisar}" />
+            </h:panelGroup>
+          </fieldset>
+        </fieldset>
+      </s:validateAll>
+
+    </h:form>
+
+    <sgc:message for="filtroForm" />
+    <sgc:messages globalOnly="true" />
+
+    <h:form id="resultadosForm" style="padding-top: 2pt;">
+      <s:fragment rendered="#{not empty visualizarParecerListarBean.pareceres}">
+        <fieldset>
+
+          <ui:repeat var="disciplinaIdioma"
+              value="#{sgc:dataModel(visualizarParecerListarBean.pareceresAgrupadosDisciplinaIdioma.keySet())}">
+            <br />
+            <rich:dataTable styleClass="dados colunaZebrada" var="parecer"
+                value="#{visualizarParecerListarBean.pareceresAgrupadosDisciplinaIdioma.get(disciplinaIdioma)}">
+              <f:facet name="caption">
+                <li>#{disciplinaIdioma}</li>
+              </f:facet>
+              <rich:column style="width: 50px; text-align: center;">
+                <f:facet name="header">#{msgs['page.visualizarParecer.label.numeroQuestao']}</f:facet>
+                <h:commandLink action="#{visualizarParecerMostrarBean.mostrarParecer(parecer)}">
+                  <h:outputText value="#{parecer.numeroQuestao}">
+                    <f:convertNumber pattern="000" />
+                  </h:outputText>
+                </h:commandLink>
+              </rich:column>
+              <rich:column>
+                <f:facet name="header">#{msgs['page.visualizarParecer.label.julgamento']}</f:facet>
+                <h:outputText value="#{parecer.julgamento}" />
+              </rich:column>
+              <rich:column>
+                <f:facet name="header">#{msgs['page.visualizarParecer.label.liberado']}</f:facet>
+                <h:outputText value="#{msgs['commons.sim']}" rendered="#{parecer.liberado}" />
+                <h:outputText value="#{msgs['commons.nao']}" rendered="#{not parecer.liberado}" />
+              </rich:column>
+              <rich:column>
+                <f:facet name="header">#{msgs['page.visualizarParecer.label.dataHora']}</f:facet>
+                <h:outputText value="#{parecer.dataUltimaModificacao}">
+                  <s:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                </h:outputText>
+              </rich:column>
+              <rich:column width="20">
+                <f:facet name="header">
+                  <h:outputText title="Selecionar para retornar" value="*" />
+                </f:facet>
+                <h:selectBooleanCheckbox id="selecionadoParaRetorno" onclick="this.blur()"
+                    title="Selecionar para retornar"
+                    value="#{visualizarParecerListarBean.pareceresSelecionadosParaRetornar[parecer]}"
+                    rendered="#{parecer.statusEnviado}">
+                  <a4j:support event="onchange" reRender="panelBotaoRetornarPareceres" />
+                </h:selectBooleanCheckbox>
+                <h:selectBooleanCheckbox id="parecerRetornado" disabled="true" value="#{true}"
+                    rendered="#{parecer.retornado}" />
+              </rich:column>
+            </rich:dataTable>
+          </ui:repeat>
+
+          <fieldset class="botoes">
+
+            <h:commandButton id="selecionarTodos" immediate="true"
+                value="#{msgs['page.visualizarParecer.selecionarTodos']}" styleClass="button"
+                actionListener="#{visualizarParecerListarBean.selecionarTodosPareceresEnviadosParaRetorno}"
+                rendered="#{visualizarParecerListarBean.mostrarBotaoSelecionarTodosPareceresParaRetorno}" />
+            <h:panelGroup id="panelBotaoRetornarPareceres">
+              <h:commandLink id="retornarPareceres" styleClass="button"
+                  value="#{msgs['page.visualizarParecer.retornarParecer']}"
+                  action="#{visualizarParecerRetornarBean.retornarPareceres(visualizarParecerListarBean.recuperarPareceresSelecionados())}"
+                  rendered="#{visualizarParecerListarBean.existeParecerSelecionado()}" />
+            </h:panelGroup>
+            <h:commandLink id="exportaPareceresLiberados" styleClass="button" target="_blank"
+                value="#{msgs['page.visualizarParecer.exportar']}"
+                action="#{visualizarParecerListarBean.exportaPareceresLiberados}"
+                rendered="#{visualizarParecerListarBean.mostrarBotaoExportaPareceres}" />
+
+            <h:commandLink id="imprimirPareceres" styleClass="button" target="_blank"
+                value="#{msgs['commons.imprimir']}" action="visualizarParecerImprimirPareceres" />
+
+
+          </fieldset>
+
+        </fieldset>
+      </s:fragment>
+    </h:form>
+
+  </ui:define>
+</ui:composition>
