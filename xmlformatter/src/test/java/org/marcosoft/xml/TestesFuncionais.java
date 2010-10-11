@@ -17,6 +17,10 @@ public class TestesFuncionais {
 	public void all() throws DocumentException, IOException {
 		assertContentsEquals("/visualizarParecerListar.xml");
 	}
+	@Test
+	public void cdata() throws DocumentException, IOException {
+		assertContentsEquals("/cdata.xml");
+	}
 
 	/**
 	 * @param inputFile

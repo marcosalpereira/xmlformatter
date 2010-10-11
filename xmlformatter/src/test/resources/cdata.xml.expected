@@ -1,0 +1,75 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich"
+    xmlns:s="http://jboss.com/products/seam/taglib" xmlns:sgc="http://www.esaf.gov.br/sgc"
+    template="visualizarParecerMostrarTemplate.jspx">
+
+  <ui:define name="head">
+    <script type="text/javascript">
+      //<![CDATA[
+      function tipoImpressaoPreenchido() {
+          var tipoImpressaoParecerSelecionado = 
+              document.getElementById("mostrarParecerForm:tipoImpressaoParecerSelecionado");
+          if (!tipoImpressaoParecerSelecionado.value 
+                  || tipoImpressaoParecerSelecionado.value == "org.jboss.seam.ui.NoSelectionConverter.noSelectionValue") {
+        	  return false;
+          }
+          return true;
+      }
+    // ]]>
+    </script>
+  </ui:define>
+
+  <ui:define name="extensao">
+    <s:fragment rendered="#{visualizarParecerMostrarBean.parecer.temRevisao}">
+      <fieldset>
+        <h:outputLabel value="#{msgs['page.visualizarParecerMostrar.label.parecerCorrigido']}:" />
+        <h:inputTextarea value="#{visualizarParecerMostrarBean.parecer.textoParecerRevisado}"
+            rows="10" cols="50" required="true" disabled="true" />
+      </fieldset>
+    </s:fragment>
+    <fieldset>
+      <h:outputLabel for="tipoImpressaoParecerSelecionado"
+          value="#{msgs['page.visualizarParecerMostrar.label.tipoImpressao']}:" />
+      <h:selectOneMenu id="tipoImpressaoParecerSelecionado" required="true"
+          value="#{visualizarParecerMostrarBean.tipoImpressaoParecerSelecionado}">
+        <s:selectItems value="#{visualizarParecerMostrarBean.tiposImpressaoParecer}"
+            var="tipoImpressaoParecer" label="#{tipoImpressaoParecer.descricao}"
+            noSelectionLabel="#{msgs['commons.selecione']}" />
+      </h:selectOneMenu>
+      <sgc:message id="msgTipoImpressaoParecerSelecionado" for="tipoImpressaoParecerSelecionado" />
+    </fieldset>
+
+  </ui:define>
+
+  <ui:define name="botoes">
+    <h:commandButton action="#{visualizarParecerMostrarBean.liberar}" immediate="true"
+        value="#{msgs['page.visualizarParecerMostrar.liberar']}"
+        rendered="#{visualizarParecerMostrarBean.parecer.statusEnviado}" />
+
+    <h:commandButton action="#{visualizarParecerMostrarBean.cancelarLiberacao}" immediate="true"
+        value="#{msgs['page.visualizarParecerMostrar.cancelarLiberacao']}"
+        rendered="#{visualizarParecerMostrarBean.possivelCancelarLiberacao}"
+        onclick="if(!confirm('#{sgc:formatMessage(msgs['page.visualizarParecerMostrar.cancelarLiberacao.confirm'],
+                                           visualizarParecerMostrarBean.parecer.numeroQuestao,
+                                           visualizarParecerMostrarBean.parecer.disciplina.nome)}')) {return false;}"/>
+
+    <h:commandButton action="#{visualizarParecerMostrarBean.revisarParecer}" immediate="true"
+        value="#{msgs['page.visualizarParecerMostrar.revisarParecer']}"
+        rendered="#{visualizarParecerMostrarBean.parecer.statusEnviado}" />
+
+    <h:commandButton
+        action="#{visualizarParecerRetornarBean.retornarParecer(visualizarParecerMostrarBean.parecer)}"
+        immediate="true" value="#{msgs['page.visualizarParecerMostrar.retorno.retornarParecer']}"
+        rendered="#{visualizarParecerMostrarBean.parecer.statusEnviado}" />
+
+    <h:commandLink id="imprimirParecer" action="#{visualizarParecerMostrarBean.imprimirParecer}"
+        onclick="if (!tipoImpressaoPreenchido()){ document.getElementById('mostrarParecerForm').submit(); return false;}"
+        styleClass="button" value="#{msgs['commons.imprimir']}" target="_blank" />
+
+    <s:button action="#{visualizarParecerListarBean.pesquisar}" value="#{msgs['commons.voltar']}"
+        immediate="true" propagation="end"></s:button>
+  </ui:define>
+
+</ui:composition>
