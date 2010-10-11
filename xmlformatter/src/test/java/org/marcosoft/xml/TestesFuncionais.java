@@ -21,6 +21,11 @@ public class TestesFuncionais {
 	public void cdata() throws DocumentException, IOException {
 		assertContentsEquals("/cdata.xml");
 	}
+	
+	@Test
+	public void multlinejs() throws DocumentException, IOException {
+		assertContentsEquals("/multlinejs.xml");
+	}
 
 	/**
 	 * @param inputFile

@@ -11,6 +11,7 @@ import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.DefaultAttribute;
+import org.dom4j.tree.DefaultCDATA;
 import org.dom4j.tree.DefaultElement;
 import org.dom4j.tree.DefaultText;
 
@@ -62,6 +63,8 @@ public class XmlFormatter {
             for (final Object object : element.content()) {
                 if (object instanceof DefaultElement) {
                     walk(sb, (Element) object, identLevel + QTD_ESPACOS_ELEMENT);
+                } else if (object instanceof DefaultCDATA) {
+                	sb.append(tratarCdata((DefaultCDATA) object, identLevel+2));
                 } else {
                     if (object instanceof DefaultText) {
                         sb.append(tratarTexto((DefaultText) object));
@@ -72,7 +75,15 @@ public class XmlFormatter {
 	    }
 	}
 
-    /**
+    private String tratarCdata(DefaultCDATA cdata, int identLevel) {
+    	final StringBuilder sb = new StringBuilder();
+    	sb.append("<![CDATA[");
+    	sb.append(cdata.getText());
+    	sb.append("]]>");
+		return sb.toString();
+	}
+
+	/**
      * Finalizar tag do elemento
      * @param element elemento
      * @param identLevel nivel de identacao
@@ -80,14 +91,23 @@ public class XmlFormatter {
      */
     private String finalizarElemento(final Element element, final int identLevel) {
         final StringBuilder sb = new StringBuilder();
-        if (!element.isTextOnly()) {
+        if (!element.isTextOnly() || contemCData(element)) {
             sb.append("\n" + spaces(identLevel));
         }
         sb.append("</" + element.getQualifiedName() + ">");
         return sb.toString();
     }
 
-    /**
+    private boolean contemCData(Element element) {
+    	for (final Object object : element.content()) {
+            if (object instanceof DefaultCDATA) {
+            	return true;
+            }
+    	}
+		return false;
+	}
+
+	/**
      * Tratar um conteudo do tipo texto.
      * @param defaultText texto
      * @return o texto formatado
